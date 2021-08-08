@@ -7,8 +7,9 @@ def previous_prep(file_name):
 
     path = f"input/{file_name}"
     citibike_previous = pd.read_csv(path, low_memory=False)
-    sample_previous = citibike_previous.sample(frac=0.03)
+    sample_previous = citibike_previous.sample(frac=0.02)
     sample_previous.reset_index(inplace=True)
+    sample_previous.columns = sample_previous.columns.str.replace(' ', '').str.lower()
 
     gender_list = []
     for i in range(len(sample_previous)):
@@ -20,14 +21,14 @@ def previous_prep(file_name):
             gender_list.append('Unknown')     
     
     sample_previous['gender_cat'] = gender_list
-    sample_previous['birth year'] = sample_previous['birth year'].astype(np.int64)
+    # sample_previous['birthyear'] = sample_previous['birthyear'].astype(np.int64)
 
     columns_previous = ['bikeid',
                         'starttime', 'stoptime', 'tripduration',
-                        'start station id', 'start station name',
-                        'end station id', 'end station name',
-                        'start station latitude', 'start station longitude', 
-                        'end station latitude', 'end station longitude', 'usertype', 'birth year', 'gender_cat']
+                        'startstationid', 'startstationname',
+                        'endstationid', 'endstationname',
+                        'startstationlatitude', 'startstationlongitude', 
+                        'endstationlatitude', 'endstationlongitude', 'usertype', 'birthyear', 'gender_cat']
 
     clean_previous =  sample_previous[columns_previous]
     clean_previous = clean_previous.rename(columns = {
@@ -35,16 +36,16 @@ def previous_prep(file_name):
         'starttime': 'Start DateTime',
         'stoptime': 'End DateTime',
         'tripduration': 'Duration [s]',
-        'start station id': 'Start Station Id',
-        'start station name': 'Start Station Name',
-        'end station id': 'End Station Id',
-        'end station name': 'End Station Name',
-        'start station latitude': 'Start Lat',
-        'start station longitude': 'Start Lon', 
-        'end station latitude': 'End Lat',
-        'end station longitude': 'End Lon',
+        'startstationid': 'Start Station Id',
+        'startstationname': 'Start Station Name',
+        'endstationid': 'End Station Id',
+        'endstationname': 'End Station Name',
+        'startstationlatitude': 'Start Lat',
+        'startstationlongitude': 'Start Lon', 
+        'endstationlatitude': 'End Lat',
+        'endstationlongitude': 'End Lon',
         'usertype': 'Membership',
-        'birth year': 'Birth Year',
+        'birthyear': 'Birth Year',
         'gender_cat': 'Gender'
     })
 
@@ -56,7 +57,7 @@ def current_prep(file_name):
 
     path = f"input/{file_name}"
     citibike_current = pd.read_csv(path, low_memory=False)
-    sample_current = citibike_current.sample(frac=0.03)
+    sample_current = citibike_current.sample(frac=0.02)
     sample_current.reset_index(inplace=True)
     
     delta = pd.to_datetime(sample_current['ended_at']) - pd.to_datetime(sample_current['started_at'])
@@ -105,9 +106,9 @@ def current_prep(file_name):
 ## PREVIOUS FORMAT LOOP
 file_counter = 1
 
-for year in range(3):
+for year in range(4):
     for month in range(12):
-        file_name = f"{2018+year}{month+1:02d}-citibike-tripdata.csv"
+        file_name = f"{2017+year}{month+1:02d}-citibike-tripdata.csv"
         clean_previous = previous_prep(file_name)
 
         if file_counter == 1:
